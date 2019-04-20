@@ -1,0 +1,2 @@
+class Orderd < ApplicationRecord
+end

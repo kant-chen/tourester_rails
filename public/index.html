@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>main</title>
+<style type="text/css">
+
+</style>
+</head>
+
+<body><h1>樂Go - 旅遊是一種生活態度</h1>
+<form>
+
+  <table id="table1" width="500" border="1">
+    <tbody>
+	  <tr>
+        <td><label>購買 </label> </td>
+		<td><label>品號 </label> </td>
+		<td><label>品名 </label> </td>
+        <td><label>庫存數量 </label></td>
+      </tr>
+    </tbody>
+  </table>
+	<p>&nbsp;</p>
+	<label for="first_name">姓名 </label>
+	<input type="text" id="first_name"><p>&nbsp;</p>
+	<label for="e_mail">E-mail </label>
+	<input type="text" id="e_mail"><p>&nbsp;</p>
+	<button onclick="submit_post();">送出</button>
+    <script>
+     function submit_post(){
+	    var l_return = submit_chk();
+		var order = {order: l_return[0]};
+		var chk_valid = l_return[1];
+		console.log(order);
+		console.log("chk_valid: " + chk_valid);
+		if (chk_valid == false){
+			alert("購買失敗！\n您必需輸入姓名、E-mail，並至少選取一項商品才可送出訂單哦");
+		}
+		var json =JSON.stringify(order);
+		console.log("request json: " + json)
+
+		//執行request完畢後要做的事
+          var f_response = function(response){
+			console.log(response)
+			var message = JSON.parse(response)
+                if (message['message']){
+                message = message['message']
+                alert(message);
+            }
+                else{
+                alert(response);
+                }
+		}
+		 http_request(json,"/buy", "POST", f_response);
+
+
+	 }
+
+	function http_request(json, theUrl, method,callback){
+		var xmlHttp = new XMLHttpRequest();   // new HttpRequest instance
+		xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                callback(xmlHttp.responseText);  //request successfuly
+			}
+            else{
+                callback(xmlHttp.responseText);  //request unsuccessfuly
+            }
+        }
+        xmlHttp.open(method, theUrl);
+        xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlHttp.send(json);
+	}
+
+	function submit_chk(){  //送出時，取得姓名、e-mail及購物清單，並傳送至後端
+        var check_valid = false;
+		var first_name = get_first_name();
+        var e_mail = get_mail_address();
+		var items = get_shopping_list();
+        //alert("您輸入的資料:\nName: " + first_name + "\nE-mail: " + e_mail);
+		if (first_name && e_mail && items){
+			check_valid = true
+		}
+		return [{first_name: first_name, e_mail: e_mail, item: items}, check_valid]
+     }
+     function get_first_name () {  //取得input: 姓名
+        var first_name = document.getElementById("first_name").value
+        console.log("Your Name is:" + first_name)
+		return first_name;
+     }
+     function get_mail_address () { //取得input: E-mail
+        var e_mail = document.getElementById("e_mail").value
+        console.log("Your E-mail is:" + first_name);
+		return e_mail
+     }
+	 function get_shopping_list (){
+		 var shopping_list = {};
+		 var table = document.getElementById("table1");
+        for (var i = 2, row; row = table.rows[i]; i++) {
+           //iterate through rows
+           //rows would be accessed using the "row" variable assigned in the for loop
+		   var buy = row.cells[0].children[0].checked;
+		   if ( buy == false ){
+			   continue;
+		   }
+           //for (var j = 0, col; col = row.cells[j]; j++) {
+             //iterate through columns
+             //columns would be accessed using the "col" variable assigned in the for loop
+		   //console.log(col.innerText)
+   //}
+		   //格式:{"品號":數量}
+		   shopping_list[row.cells[1].innerText] = 1; //預設購買數量1
+
+        }
+		 console.log(shopping_list)
+		 if (Object.keys(shopping_list).length == 0){
+			 shopping_list = null;
+		 }
+		 return shopping_list;
+	 }
+     function init(){
+     //執行request完畢後要做的事
+      var f_response = function(response){
+
+        var item_list = fetch_2(response);
+        if (item_list == false){
+            alert(response)
+            return;
+            }
+
+
+        }
+        http_request(null,"/item_list/items", "GET", f_response);
+    }
+
+
+     function fetch_2(json){
+        var item_list = JSON.parse(json)
+        if (! item_list['item_list']){
+            return false
+        }
+        item_list = item_list['item_list']
+        //拆解品號、品名、庫存數量並顯示於網頁中
+        var ProductId, ProductName1, StockQty
+        var row, cell1, cell2, cell3, cell4, new_chkbox
+        var table = document.getElementById('table1')
+        //var len = table.rows.length
+        for (var i = 0, item;item = item_list[i]; i++){
+            ProductId = item["id"];
+            ProductName1 = item["product_name1"];
+            StockQty = item["stock_qty"];
+            row = table.insertRow(i+1)
+            cell1 = row.insertCell(0)
+            cell2 = row.insertCell(1)
+            cell3 = row.insertCell(2)
+            cell4 = row.insertCell(3)
+
+            new_chkbox = document.createElement("INPUT");
+            new_chkbox.setAttribute("type", "checkbox");
+            cell1.appendChild(new_chkbox)
+            cell2.innerHTML = ProductId
+            cell3.innerHTML = ProductName1
+            cell4.innerHTML = StockQty
+
+            if ( i >= item_list.length - 1){
+                break;
+                }
+            }
+     }
+    init();
+    </script>
+</form>
+
+</body>
+</html>
