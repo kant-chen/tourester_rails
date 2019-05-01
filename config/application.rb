@@ -11,7 +11,7 @@ module Hello
     config.api_only = true
     # Use the responders controller from the responders gem
     config.app_generators.scaffold_controller :responders_controller
-
+    config.web_console.whitelisted_ips = '192.168.0.0/16'
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
 

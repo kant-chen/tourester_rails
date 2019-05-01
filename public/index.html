@@ -41,7 +41,7 @@
 		console.log("request json: " + json)
 
 		//執行request完畢後要做的事
-          var f_response = function(response){
+      var f_response = function(response){
 			console.log(response)
 			var message = JSON.parse(response)
                 if (message['message']){
@@ -52,22 +52,28 @@
                 alert(response);
                 }
 		}
-		 http_request(json,"/buy", "POST", f_response);
+		 http_request(json,"/buy/submit", "POST", false, f_response);
 
 
 	 }
 
-	function http_request(json, theUrl, method,callback){
+	function http_request(json, theUrl, method, is_sync,callback){
 		var xmlHttp = new XMLHttpRequest();   // new HttpRequest instance
 		xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
                 callback(xmlHttp.responseText);  //request successfuly
-			}
+			      }
             else{
-                callback(xmlHttp.responseText);  //request unsuccessfuly
+              if (xmlHttp.readyState == 4 && xmlHttp.status != 200){
+                  callback(xmlHttp.responseText);  //request successfuly but server returns error
+  			      }
+                //alert("Some error occured");
+                //callback(xmlHttp.responseText);  //request unsuccessfuly
             }
         }
-        xmlHttp.open(method, theUrl);
+
+        xmlHttp.open(method, theUrl, is_sync);
+        //xmlHttp.timeout = 5000  timeout和非同步請求(is_sync=false)不可同時使用
         xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xmlHttp.send(json);
 	}
@@ -103,11 +109,6 @@
 		   if ( buy == false ){
 			   continue;
 		   }
-           //for (var j = 0, col; col = row.cells[j]; j++) {
-             //iterate through columns
-             //columns would be accessed using the "col" variable assigned in the for loop
-		   //console.log(col.innerText)
-   //}
 		   //格式:{"品號":數量}
 		   shopping_list[row.cells[1].innerText] = 1; //預設購買數量1
 
@@ -130,7 +131,7 @@
 
 
         }
-        http_request(null,"/item_list/items", "GET", f_response);
+        http_request(null,"/item_list/items", "GET", true, f_response);
     }
 
 
