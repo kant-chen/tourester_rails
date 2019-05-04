@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 2019_04_20_051814) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "customer", force: :cascade do |t|
+  create_table "customers", id: :bigint, default: -> { "nextval('customer_id_seq'::regclass)" }, force: :cascade do |t|
     t.string "customer_name"
     t.string "email"
     t.string "status"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 2019_04_20_051814) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "order_list", force: :cascade do |t|
+  create_table "order_lists", id: :bigint, default: -> { "nextval('order_list_id_seq'::regclass)" }, force: :cascade do |t|
     t.integer "order_seq"
     t.string "product_id"
     t.float "unit_price"
@@ -35,14 +35,14 @@ ActiveRecord::Schema.define(version: 2019_04_20_051814) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "orderd", force: :cascade do |t|
+  create_table "orderds", id: :bigint, default: -> { "nextval('orderd_id_seq'::regclass)" }, force: :cascade do |t|
     t.string "customer_id"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "product", force: :cascade do |t|
+  create_table "products", id: :bigint, default: -> { "nextval('product_id_seq'::regclass)" }, force: :cascade do |t|
     t.string "product_name1"
     t.string "product_name2"
     t.float "unit_price"
@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 2019_04_20_051814) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "send_mail", force: :cascade do |t|
+  create_table "send_mails", id: :bigint, default: -> { "nextval('send_mail_id_seq'::regclass)" }, force: :cascade do |t|
     t.string "to_add"
     t.string "cc_add"
     t.string "secret_add"
