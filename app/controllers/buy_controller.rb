@@ -1,5 +1,6 @@
 class BuyController < ApplicationController
   def submit
+    puts "params is:#{params}"
     order = params['order']
     first_name = order['first_name']
     e_mail = order['e_mail']
@@ -22,8 +23,10 @@ class BuyController < ApplicationController
     end
     #add a customer to database
     new_customer = Customer.create(customer_name: first_name, email: e_mail, status: 'Y')
+    puts "new_customer.id: #{new_customer.id}"
     #add a order to database
     new_order =  Orderd.create(customer_id: new_customer.id, status: 'Y')
+    puts "new_order.id: #{new_order.id}"
     #add order list to database
     order_str = ""
     puts "order_lists is: #{shopping_list}"
@@ -55,6 +58,7 @@ class BuyController < ApplicationController
   def chk_stock_qty(item, qty)
     #check if the stock is satisfied
     l_cnt = Product.where("id = ? AND stock_qty >= ?", item, qty).limit(1).length()
+    puts "l_cnt = #{l_cnt}"
     if l_cnt > 0
       return true
     else

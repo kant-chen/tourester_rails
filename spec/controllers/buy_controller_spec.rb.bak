@@ -1,0 +1,12 @@
+require 'rails_helper'
+format documentation
+#RSpec.describe BuyController, type: :controller do
+RSpec.describe "POST buy#submit", :type => :request do
+  it "submits order" do
+    request_json =  {"order"=>{"first_name"=>"kant", "e_mail"=>"kant@gmail.com", "item"=>{"46"=>1}},
+                              "buy"=>{"order"=>{"first_name"=>"kant", "e_mail"=>"kant@gmail.com", "item"=>{"46"=>1}}}}
+    post "buy/submit", :params => request_json
+    expect(response.body).to include("The order has been received!")
+
+  end
+end
